@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 
-const Alert = ({ type, msg, removeAlert, list }) => {
+// component that handles the project alert functionality.
+const ProjectAlert = ({ type, msg, removeProjectAlert, projectList }) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
-      removeAlert();
+      removeProjectAlert();
     }, 3000);
     return () => clearTimeout(timeout);
-  }, [list]);
+  }, [projectList]);
   return <p className={"alert alert-${type}"}>{msg}</p>;
 };
 
-export default Alert;
+export default ProjectAlert;

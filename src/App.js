@@ -1,108 +1,146 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import List from "./component/List";
-import Alert from "./component/Alert";
+import ProjectList from "./component/ProjectList";
+import ProjectAlert from "./component/ProjectAlert";
 
+//Gathers the project list from local storage.
 const getLocalStorage = () => {
-  let list = localStorage.getItem("list");
+  let projectList = localStorage.getItem("projectList");
 
-  if (list) {
-    return (list = JSON.parse(localStorage.getItem("list")));
+  //If there is nothing in
+  if (projectList) {
+    return (projectList = JSON.parse(localStorage.getItem("projectList")));
   } else {
     return [];
   }
 };
 
 const App = () => {
-  const [name, setName] = useState("");
-  const [list, setList] = useState(getLocalStorage());
-  const [isEditing, setIsEditing] = useState(false);
-  const [editID, setEditID] = useState(null);
-  const [alert, setAlert] = useState({ show: false, msg: "", type: "" });
+  // Sets Default status of all constants used.
+  const [projectName, setProjectName] = useState("");
+  const [projectList, setProjectList] = useState(getLocalStorage());
+  const [isProjectEditing, setIsProjectEditing] = useState(false);
+  const [editProjectID, setEditProjectID] = useState(null);
+  const [projectAlert, setProjectAlert] = useState({
+    show: false,
+    msg: "",
+    type: "",
+  });
 
+  //Sets the project list to local storage when the project list changes.
   useEffect(() => {
-    localStorage.setItem("list", JSON.stringify(list));
-  }, [list]);
+    localStorage.setItem("projectList", JSON.stringify(projectList));
+  }, [projectList]);
 
-  const handleSubmit = (e) => {
+  //Function runs when the submit button is pressed
+  const handleProjectSubmit = (e) => {
     e.preventDefault();
 
-    if (!name) {
-      showAlert(true, "danger", "Please Enter To-Do Item");
-    } else if (name && isEditing) {
-      setList(
-        list.map((item) => {
-          if (item.id === editID) {
-            return { ...item, title: name };
+    // checks if there is an entry in the project name field, otherwise message requests user to corret it.
+    if (!projectName) {
+      showProjectAlert(true, "danger", "Please Enter Project Name");
+    } else if (projectName && isProjectEditing) {
+      setProjectList(
+        projectList.map((item) => {
+          if (item.id === editProjectID) {
+            return { ...item, title: projectName };
           }
           return item;
         })
       );
-      setName("");
-      setEditID(null);
-      setIsEditing(false);
-      showAlert(true, "success", "Value Changed");
+
+      // resets form fields after project name entry.
+      setProjectName("");
+      setEditProjectID(null);
+      setIsProjectEditing(false);
+
+      //This determines if the the form is in to add or to edit.
+      showProjectAlert(true, "success", "Value Changed");
     } else {
-      showAlert(true, "success", "Item Added to the List");
-      const newItem = { id: new Date().getTime().toString(), title: name };
-      setList([...list, newItem]);
-      setName("");
+      showProjectAlert(true, "success", "Item Added to the List");
+      const newProjectItem = {
+        id: new Date().getTime().toString(),
+        title: projectName,
+      };
+
+      // updates the project list with the new project item.
+      setProjectList([...projectList, newProjectItem]);
+      setProjectName("");
     }
   };
 
-  const showAlert = (show = false, type = "", msg = "") => {
-    setAlert({ show, type, msg });
+  // function that shows a project alert when an entry is attempted.
+  const showProjectAlert = (show = false, type = "", msg = "") => {
+    setProjectAlert({ show, type, msg });
   };
 
-  const removeItem = (id) => {
-    showAlert(true, "danger", "Item Removed from list");
-    setList(list.filter((item) => item.id !== id));
+  // function that handles removing a project item when the delete button is pressed.
+  const removeProjectItem = (id) => {
+    showProjectAlert(true, "danger", "Item Removed from list");
+    setProjectList(projectList.filter((item) => item.id !== id));
   };
 
-  const editItem = (id) => {
-    const editItem = list.find((item) => item.id === id);
-    setIsEditing(true);
-    setEditID(id);
-    setName(editItem.title);
+  // function that handles editing a project item when the edit button is pressed.
+  const editProjectItem = (id) => {
+    const editProjectItem = projectList.find((item) => item.id === id);
+    setIsProjectEditing(true);
+    setEditProjectID(id);
+    setProjectName(editProjectItem.title);
   };
 
-  const clearList = () => {
-    showAlert(true, "danger", "Empty List");
-    setList([]);
+  //Selects the Project Item
+  const selectProjectItem = (id) => {
+    return projectList.find((item) => item.id === id).title;
   };
 
   return (
-    <div className="productivity-manager-app">
-      <header>
-        <h1>Productivity Manager</h1>
+    <div
+      className="productivity-manager-app bg-[url('/public/bg_01.jpg')] bg-no-repeat bg-cover text-white "
+      style={{ height: "100vh" }}
+    >
+      <header className="text-5xl text-orange-500">
+        <h1 className="p-10">Productivity Manager</h1>
       </header>
-      <div>
-        <form className="todo-form" onSubmit={handleSubmit}>
+
+      <div className="flex p-4">
+        <form className="todo-form block" onSubmit={handleProjectSubmit}>
           {alert.show && (
-            <Alert {...alert} removeAlert={showAlert} list={list} />
+            <ProjectAlert
+              className=""
+              {...alert}
+              removeProjectAlert={showProjectAlert}
+              projectList={projectList}
+            />
           )}
           <input
             type="text"
-            className="form-control"
+            className="form-control block text-black"
             placeholder="Enter To-Do Item Here"
-            onChange={(e) => setName(e.target.value)}
-            value={name}
+            onChange={(e) => setProjectName(e.target.value)}
+            value={projectName}
           />
-          <button type="submit" className="add-todo-item-bttn">
-            {isEditing ? "Edit" : "Submit"}
+          <button type="submit" className="add-todo-item-bttn w-40 p-4">
+            {isProjectEditing ? "Edit" : "Submit"}
           </button>
         </form>
-        {list.length > 0 && (
-          <div>
-            <List items={list} removeItem={removeItem} editItem={editItem} />
-            <button className="btn" onClick={clearList}>
-              {" "}
-              Clear List{" "}
-            </button>
-          </div>
-        )}
       </div>
+
+      {projectList.length > 0 && (
+        <div className="flex p-4">
+          <div className="block">
+            <h2 className="text-4xl text-orange-400 p-4">Projects List</h2>
+            <ProjectList
+              className=""
+              items={projectList}
+              selectProjectItem={selectProjectItem}
+              removeProjectItem={removeProjectItem}
+              editProjectItem={editProjectItem}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
 export default App;
