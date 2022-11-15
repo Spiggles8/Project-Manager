@@ -1,144 +1,233 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
-import ProjectList from "./component/ProjectList";
-import ProjectAlert from "./component/ProjectAlert";
+import { React, useEffect, useState } from "react";
 
-//Gathers the project list from local storage.
 const getLocalStorage = () => {
-  let projectList = localStorage.getItem("projectList");
-
-  //If there is nothing in
-  if (projectList) {
-    return (projectList = JSON.parse(localStorage.getItem("projectList")));
+  if (
+    localStorage.getItem("projectList") &&
+    localStorage.getItem("projectList") !== null
+  ) {
+    return JSON.parse(localStorage.getItem("projectList"));
   } else {
     return [];
   }
 };
 
 const App = () => {
-  // Sets Default status of all constants used.
-  const [projectName, setProjectName] = useState("");
   const [projectList, setProjectList] = useState(getLocalStorage());
-  const [isProjectEditing, setIsProjectEditing] = useState(false);
-  const [editProjectID, setEditProjectID] = useState(null);
-  const [projectAlert, setProjectAlert] = useState({
-    show: false,
-    msg: "",
-    type: "",
-  });
+  const [newProject, setNewProject] = useState("");
+  const [currentProject, setCurrentProject] = useState("");
+  const [isShownProject, setIsShowProject] = useState(false);
+  const [newTask, setNewTask] = useState("");
+  const [taskList, setTaskList] = useState([]);
+  const [todoProjectEditing, setTodoProjectEditing] = useState(null);
+  const [editingProject, setEditingProject] = useState("");
+  const [todoTaskEditing, setTodoTaskEditing] = useState(null);
+  const [editingTask, setEditingTask] = useState("");
 
-  //Sets the project list to local storage when the project list changes.
-  useEffect(() => {
+  //Section that handles when a new project is submitted.
+  const handleProjectSubmit = (event) => {
+    event.preventDefault();
+
+    let project = {
+      id: new Date().getTime().toString(),
+      projectName: newProject,
+      tasks: [],
+    };
+    setProjectList([...projectList, project]);
+    setNewProject("");
     localStorage.setItem("projectList", JSON.stringify(projectList));
-  }, [projectList]);
+  };
 
-  //Function runs when the submit button is pressed
-  const handleProjectSubmit = (e) => {
-    e.preventDefault();
+  //Handles when a new project is selected from the project list.
+  const selectProject = (event) => {
+    setCurrentProject(event.target.innerHTML);
 
-    // checks if there is an entry in the project name field, otherwise message requests user to corret it.
-    if (!projectName) {
-      showProjectAlert(true, "danger", "Please Enter Project Name");
-    } else if (projectName && isProjectEditing) {
-      setProjectList(
-        projectList.map((item) => {
-          if (item.id === editProjectID) {
-            return { ...item, title: projectName };
-          }
-          return item;
-        })
-      );
+    if (isShownProject === false) setIsShowProject(true);
+  };
 
-      // resets form fields after project name entry.
-      setProjectName("");
-      setEditProjectID(null);
-      setIsProjectEditing(false);
-
-      //This determines if the the form is in to add or to edit.
-      showProjectAlert(true, "success", "Value Changed");
-    } else {
-      showProjectAlert(true, "success", "Item Added to the List");
-      const newProjectItem = {
-        id: new Date().getTime().toString(),
-        title: projectName,
-      };
-
-      // updates the project list with the new project item.
-      setProjectList([...projectList, newProjectItem]);
-      setProjectName("");
+  //Handles when the current project (the project selected) is changed.
+  useEffect(() => {
+    if (currentProject !== "") {
+      let newArr = projectList.filter(
+        (project) => project.projectName === currentProject
+      )[0].tasks;
+      setTaskList(newArr);
     }
+  }, [currentProject]);
+
+  //Section that handles when a new task is submitted.
+  const handleTaskSubmit = (event) => {
+    event.preventDefault();
+
+    let selectedProject = projectList.find(function (projectList, index) {
+      if (projectList.projectName == currentProject) return true;
+    });
+
+    let task = {
+      id: new Date().getTime().toString(),
+      taskName: newTask,
+    };
+
+    selectedProject.tasks[selectedProject.tasks.length] = task;
+    setProjectList(projectList);
+    setNewTask("");
+    localStorage.setItem("projectList", JSON.stringify(projectList));
   };
 
-  // function that shows a project alert when an entry is attempted.
-  const showProjectAlert = (show = false, type = "", msg = "") => {
-    setProjectAlert({ show, type, msg });
+  const editProject = (id) => {
+    const updatedProjects = [...projectList].map((project) => {
+      if (project.id === id) {
+        project.projectName = editingProject;
+      }
+      return project;
+    });
+    setCurrentProject(editingProject);
+    setProjectList(updatedProjects);
+    setTodoProjectEditing(null);
+    setEditingProject("");
+    localStorage.setItem("projectList", JSON.stringify(projectList));
   };
 
-  // function that handles removing a project item when the delete button is pressed.
-  const removeProjectItem = (id) => {
-    showProjectAlert(true, "danger", "Item Removed from list");
-    setProjectList(projectList.filter((item) => item.id !== id));
+  //Deletes the selected project.
+  const deleteProject = (id) => {
+    setProjectList(projectList.filter((project) => project.id !== id));
+    setCurrentProject("");
+    setIsShowProject(false);
+    localStorage.setItem("projectList", JSON.stringify(projectList));
   };
 
-  // function that handles editing a project item when the edit button is pressed.
-  const editProjectItem = (id) => {
-    const editProjectItem = projectList.find((item) => item.id === id);
-    setIsProjectEditing(true);
-    setEditProjectID(id);
-    setProjectName(editProjectItem.title);
+  const completeTask = (id) => {};
+
+  const editTask = (id) => {
+    const updatedTasks = [...taskList].map((task) => {
+      if (task.id === id) {
+        task.taskName = editingTask;
+      }
+      return task;
+    });
+    setTaskList(updatedTasks);
+    setTodoTaskEditing(null);
+    setEditingTask("");
+    localStorage.setItem("projectList", JSON.stringify(projectList));
   };
 
-  //Selects the Project Item
-  const selectProjectItem = (id) => {
-    return projectList.find((item) => item.id === id).title;
+  //Deletes the selected task.
+  const deleteTask = (id) => {
+    setTaskList(taskList.filter((task) => task.id !== id));
+    localStorage.setItem("projectList", JSON.stringify(projectList));
   };
 
   return (
-    <div
-      className="productivity-manager-app bg-[url('/public/bg_01.jpg')] bg-no-repeat bg-cover text-white "
-      style={{ height: "100vh" }}
-    >
-      <header className="text-5xl text-orange-500">
-        <h1 className="p-10">Productivity Manager</h1>
+    <div className="Main">
+      <header className="Header">
+        <h1> Project Tracker </h1>
       </header>
-
-      <div className="flex p-4">
-        <form className="todo-form block" onSubmit={handleProjectSubmit}>
-          {alert.show && (
-            <ProjectAlert
-              className=""
-              {...alert}
-              removeProjectAlert={showProjectAlert}
-              projectList={projectList}
-            />
-          )}
-          <input
-            type="text"
-            className="form-control block text-black"
-            placeholder="Enter To-Do Item Here"
-            onChange={(e) => setProjectName(e.target.value)}
-            value={projectName}
-          />
-          <button type="submit" className="add-todo-item-bttn w-40 p-4">
-            {isProjectEditing ? "Edit" : "Submit"}
-          </button>
-        </form>
-      </div>
-
-      {projectList.length > 0 && (
-        <div className="flex p-4">
-          <div className="block">
-            <h2 className="text-4xl text-orange-400 p-4">Projects List</h2>
-            <ProjectList
-              className=""
-              items={projectList}
-              selectProjectItem={selectProjectItem}
-              removeProjectItem={removeProjectItem}
-              editProjectItem={editProjectItem}
-            />
+      <div className="Body">
+        <section className="Project">
+          <div className="List">
+            <h2 className="Header2">Projects List</h2>
+            {projectList.map((project) => {
+              return (
+                <ul key={project.id}>
+                  <li>
+                    {todoProjectEditing === project.id ? (
+                      <input
+                        type="text"
+                        placeholder="Edit Project Title"
+                        required
+                        onChange={(e) => setEditingProject(e.target.value)}
+                        value={editingProject}
+                        className="Input"
+                      />
+                    ) : (
+                      <button onClick={selectProject}>
+                        {project.projectName}
+                      </button>
+                    )}
+                    {todoProjectEditing === project.id ? (
+                      <button onClick={() => editProject(project.id)}>
+                        Submit Edits
+                      </button>
+                    ) : (
+                      <button onClick={() => setTodoProjectEditing(project.id)}>
+                        Edit Project
+                      </button>
+                    )}
+                    <button onClick={() => deleteProject(project.id)}>
+                      Delete Project
+                    </button>
+                  </li>
+                </ul>
+              );
+            })}
           </div>
-        </div>
-      )}
+          <form onSubmit={handleProjectSubmit} className="Form">
+            <label>Enter Project Title</label>
+            <input
+              type="text"
+              required
+              placeholder="Enter Project Title"
+              onChange={(event) => setNewProject(event.target.value)}
+              value={newProject}
+              className="Input"
+            />
+            <button>Submit Project</button>
+          </form>
+        </section>
+        {isShownProject && (
+          <section value={currentProject} className="Tasks">
+            <div className="List">
+              <h2 className="Header2">{currentProject} Tasks</h2>
+              {taskList.map((task) => {
+                return (
+                  <ul key={task.id}>
+                    <li>
+                      {todoTaskEditing === task.id ? (
+                        <input
+                          type="text"
+                          placeholder="Edit Task Name"
+                          required
+                          onChange={(e) => setEditingTask(e.target.value)}
+                          value={editingTask}
+                          className="Input"
+                        />
+                      ) : (
+                        <button onClick={() => completeTask(task.id)}>
+                          {task.taskName}
+                        </button>
+                      )}
+                      {todoTaskEditing === task.id ? (
+                        <button onClick={() => editTask(task.id)}>
+                          Submit Edits
+                        </button>
+                      ) : (
+                        <button onClick={() => setTodoTaskEditing(task.id)}>
+                          Edit Task
+                        </button>
+                      )}
+                      <button onClick={() => deleteTask(task.id)}>
+                        Delete Task
+                      </button>
+                    </li>
+                  </ul>
+                );
+              })}
+            </div>
+            <form onSubmit={handleTaskSubmit} className="Form">
+              <label>Enter Task Name</label>
+              <input
+                type="text"
+                required
+                placeholder="Enter Task Name"
+                onChange={(event) => setNewTask(event.target.value)}
+                value={newTask}
+                className="Input"
+              />
+              <button>Submit Task</button>
+            </form>
+          </section>
+        )}
+      </div>
     </div>
   );
 };

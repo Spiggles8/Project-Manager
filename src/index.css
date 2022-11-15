@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.Main {
+  @apply h-screen bg-[url('../public/bg_01.jpg')] bg-cover text-white;
+}
+
+.Header {
+  @apply text-center text-5xl pt-5 pb-8;
+}
+
+.Body {
+  @apply flex justify-center;
+}
+
+.Project {
+  @apply bg-orange-600/75 border-gray-300 border-2 rounded-lg m-5 p-5;
+}
+
+.Header2 {
+  @apply text-2xl text-center pb-2;
+}
+
+.Form {
+  @apply border-black border-2 rounded-lg p-2;
+}
+
+.Tasks {
+  @apply inline-block bg-orange-600/75 border-gray-300 border-2 rounded-lg m-5 p-5 pt-2;
+}
