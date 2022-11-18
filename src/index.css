@@ -15,17 +15,56 @@
 }
 
 .Project {
-  @apply bg-orange-600/75 border-gray-300 border-2 rounded-lg m-5 p-5;
+  @apply bg-transparent border-gray-300 border-2 rounded-lg m-5 p-5;
 }
 
 .Header2 {
-  @apply text-2xl text-center pb-2;
+  @apply text-3xl text-center pb-2 underline;
 }
 
 .Form {
-  @apply border-black border-2 rounded-lg p-2;
+  @apply space-x-4 border-green-700 border-4 rounded-lg p-2;
+}
+
+.Input {
+  @apply text-black rounded-md text-lg;
 }
 
 .Tasks {
-  @apply inline-block bg-orange-600/75 border-gray-300 border-2 rounded-lg m-5 p-5 pt-2;
+  @apply bg-transparent border-gray-300 border-2 rounded-lg m-5 p-5;
+}
+
+.ListContainer {
+  @apply pb-5;
+}
+
+.ProjectListItems {
+  @apply justify-center pt-2 pb-2 mt-2 mb-2;
+}
+
+.ProjectListItems:nth-child(6n + 2) {
+  @apply flex justify-center p-2 bg-red-600 rounded-lg;
+}
+.ProjectListItems:nth-child(6n + 3) {
+  @apply flex justify-center p-2 bg-orange-500 rounded-lg;
+}
+.ProjectListItems:nth-child(6n + 4) {
+  @apply flex justify-center p-2 bg-yellow-500 rounded-lg;
+}
+.ProjectListItems:nth-child(6n + 5) {
+  @apply flex justify-center p-2 bg-green-500 rounded-lg;
+}
+.ProjectListItems:nth-child(6n + 6) {
+  @apply flex justify-center p-2 bg-blue-500 rounded-lg;
+}
+.ProjectListItems:nth-child(6n + 7) {
+  @apply flex justify-center p-2 bg-purple-500 rounded-lg;
+}
+
+.ListItems {
+  @apply space-x-6 text-lg p-1;
+}
+
+.ItemTitle {
+  @apply text-2xl;
 }
