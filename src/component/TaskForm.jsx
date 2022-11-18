@@ -7,6 +7,7 @@ export default function TaskForm({
   taskList,
   setTaskList,
   currentProject,
+  showTaskAlert
 }) {
   const [newTask, setNewTask] = useState("");
 
@@ -26,6 +27,9 @@ export default function TaskForm({
     setTaskList([...taskList, task]);
     selectedProject.tasks[selectedProject.tasks.length] = task;
     setProjectList(projectList);
+
+    showTaskAlert(true, "success", "Task Sucessfully Added to Project");
+
     setNewTask("");
 
     localStorage.setItem("projectList", JSON.stringify(projectList));

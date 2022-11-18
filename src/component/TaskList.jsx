@@ -7,6 +7,7 @@ export default function TaskList({
   currentProject,
   taskList,
   setTaskList,
+  showTaskAlert
 }) {
   const [editingTask, setEditingTask] = useState("");
   const [todoTaskEditing, setTodoTaskEditing] = useState(null);
@@ -20,6 +21,9 @@ export default function TaskList({
       return task;
     });
     setTaskList(updatedTasks);
+
+    showTaskAlert(true, "success" ,"Task Name Changed Successfully");
+
     setTodoTaskEditing(null);
     setEditingTask("");
     localStorage.setItem("projectList", JSON.stringify(projectList));
@@ -31,6 +35,9 @@ export default function TaskList({
   //Deletes the selected task.
   const deleteTask = (id) => {
     setTaskList(taskList.filter((task) => task.id !== id));
+
+    showTaskAlert(true, "danger" ,"Task Deleted Successfully");
+
     localStorage.setItem("projectList", JSON.stringify(projectList));
   };
 

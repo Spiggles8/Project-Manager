@@ -5,11 +5,11 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 export default function ProjectList({
   projectList,
   setProjectList,
-  currentProject,
   setCurrentProject,
   setIsShowProject,
   isShownProject,
   setTaskList,
+  showProjectAlert
 }) {
   const [todoProjectEditing, setTodoProjectEditing] = useState(null);
   const [editingProject, setEditingProject] = useState("");
@@ -24,6 +24,9 @@ export default function ProjectList({
     });
     setCurrentProject(editingProject);
     setProjectList(updatedProjects);
+
+    showProjectAlert(true, "success" ,"Project Title Changed Successfully");
+
     setTodoProjectEditing(null);
     setEditingProject("");
 
@@ -33,6 +36,9 @@ export default function ProjectList({
   //Deletes the selected project from the Project List
   const deleteProject = (id) => {
     setProjectList(projectList.filter((project) => project.id !== id));
+
+    showProjectAlert(true, "danger" ,"Project Deleted Successfully");
+
     setCurrentProject("");
     setIsShowProject(false);
 

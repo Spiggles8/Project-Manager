@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 // This component handles the Project Form. When submitted adds to the Project List.
-export default function ProjectForm({ projectList, setProjectList }) {
+export default function ProjectForm({ projectList, setProjectList, showProjectAlert }) {
   const [newProject, setNewProject] = useState("");
 
   //Section that handles when a new project is submitted.
@@ -15,6 +15,8 @@ export default function ProjectForm({ projectList, setProjectList }) {
     };
     setProjectList([...projectList, project]);
     setNewProject("");
+
+    showProjectAlert(true, "sucess", "Project Sucessfully Added");
 
     localStorage.setItem("projectList", JSON.stringify(projectList));
   };

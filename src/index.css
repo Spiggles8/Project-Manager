@@ -61,6 +61,10 @@
   @apply flex justify-center p-2 bg-purple-500 rounded-lg;
 }
 
+.TaskListItems {
+  @apply text-center p-2 mt-2 mb-2;
+}
+
 .ListItems {
   @apply space-x-6 text-lg p-1;
 }

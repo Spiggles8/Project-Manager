@@ -4,6 +4,8 @@ import ProjectList from "./component/ProjectList";
 import ProjectForm from "./component/ProjectForm";
 import TaskList from "./component/TaskList";
 import TaskForm from "./component/TaskForm";
+import ProjectAlert from "./component/ProjectAlert";
+import TaskAlert from "./component/TaskAlert";
 
 //Looks to see if there is a Project List in Local Storage.
 const getLocalStorage = () => {
@@ -23,6 +25,26 @@ const App = () => {
   const [currentProject, setCurrentProject] = useState("");
   const [isShownProject, setIsShowProject] = useState(false);
   const [taskList, setTaskList] = useState([]);
+  const [projectAlert, setProjectAlert] = useState({
+    show: false,
+    msg: "",
+    type: "",
+  });
+  const [taskAlert, setTaskAlert] = useState({
+    show: false,
+    msg: "",
+    type: "",
+  });
+
+  // Displays the Project Alert displays what changes were made in the Projects List.
+  const showProjectAlert = (show = false, type = "", msg = "") => {
+    setProjectAlert({ show, type, msg });
+  };
+
+  // Displays the Task Alert displays what changes were made in the Tasks List.
+  const showTaskAlert = (show = false, type = "", msg = "") => {
+    setTaskAlert({ show, type, msg });
+  };
 
   return (
     <div className="Main">
@@ -34,16 +56,24 @@ const App = () => {
           <ProjectList
             projectList={projectList}
             setProjectList={setProjectList}
-            currentProject={currentProject}
             setCurrentProject={setCurrentProject}
             setIsShowProject={setIsShowProject}
             isShownProject={isShownProject}
             setTaskList={setTaskList}
+            showProjectAlert={showProjectAlert}
           />
           <ProjectForm
             projectList={projectList}
             setProjectList={setProjectList}
+            showProjectAlert={showProjectAlert}
           />
+          {projectAlert.show && (
+            <ProjectAlert
+              projectList={projectList}
+              {...projectAlert}
+              removeProjectAlert={showProjectAlert}
+            />
+          )}
         </section>
         {isShownProject && (
           <section value={currentProject} className="Tasks">
@@ -52,6 +82,7 @@ const App = () => {
               currentProject={currentProject}
               taskList={taskList}
               setTaskList={setTaskList}
+              showTaskAlert={showTaskAlert}
             />
             <TaskForm
               projectList={projectList}
@@ -59,7 +90,15 @@ const App = () => {
               taskList={taskList}
               setTaskList={setTaskList}
               currentProject={currentProject}
+              showTaskAlert={showTaskAlert}
             />
+            {taskAlert.show && (
+              <TaskAlert
+                taskList={taskList}
+                {...taskAlert}
+                removeTaskAlert={showTaskAlert}
+              />
+            )}
           </section>
         )}
       </div>
