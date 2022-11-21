@@ -1,6 +1,6 @@
 {
   "short_name": "PM App",
-  "name": "Productivity Manager App",
+  "name": "Project Manager App",
   
   "start_url": ".",
   "display": "standalone",
